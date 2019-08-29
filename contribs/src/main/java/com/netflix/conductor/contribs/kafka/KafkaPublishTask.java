@@ -181,7 +181,7 @@ public class KafkaPublishTask extends WorkflowSystemTask {
 
 	@Override
 	public boolean isAsync() {
-		return true;
+		return false;
 	}
 
 
