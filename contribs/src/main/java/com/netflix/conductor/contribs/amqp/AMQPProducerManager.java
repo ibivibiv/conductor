@@ -14,11 +14,14 @@ public class AMQPProducerManager {
 	public final String requestTimeoutConfig;
 
 	public AMQPProducerManager(Configuration configuration) {
+		System.out.println("*************************producermanager constructor");
 		this.requestTimeoutConfig = configuration.getProperty(AMQP_PUBLISH_REQUEST_TIMEOUT_MS, DEFAULT_REQUEST_TIMEOUT);
 	}
 
 	@VisibleForTesting
 	Properties getProducerProperties(AMQPPublishTask.Input input) {
+		
+		System.out.println("*********************start get properties from input");
 
 		Properties configProperties = new Properties();
 
@@ -27,6 +30,8 @@ public class AMQPProducerManager {
 		if (Objects.nonNull(input.getRequestTimeoutMs())) {
 			requestTimeoutMs = String.valueOf(input.getRequestTimeoutMs());
 		}
+		
+		System.out.println("*********************stop get properties from input")
 
 		return configProperties;
 	}
