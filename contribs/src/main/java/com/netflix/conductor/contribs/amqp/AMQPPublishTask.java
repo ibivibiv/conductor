@@ -63,17 +63,6 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		this.producerManager = clientManager;
 		logger.info("AMQPTask initialized...");
 
-		this.factory = new ConnectionFactory();
-		logger.info("AMQP Connection Factory initialized...");
-		this.factory.setHost(this.input.getHosts());
-
-		try {
-			this.connection = factory.newConnection();
-		} catch (IOException | TimeoutException e) {
-			logger.error("could not connect to rabbit host");
-			e.printStackTrace();
-		}
-
 	}
 
 	private static ObjectMapper objectMapper() {
@@ -109,6 +98,11 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		}
 
 		try {
+			this.factory = new ConnectionFactory();
+			logger.info("AMQP Connection Factory initialized...");
+			this.factory.setHost(this.input.getHosts());
+
+			this.connection = factory.newConnection();
 			com.rabbitmq.client.Channel channel = connection.createChannel();
 			channel.queueDeclare(this.input.getQueue(), true, false, false, null);
 
