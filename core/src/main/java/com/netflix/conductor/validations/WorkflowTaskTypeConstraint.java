@@ -81,6 +81,7 @@ public @interface WorkflowTaskTypeConstraint {
                     valid = isKafkaPublishTaskValid(workflowTask, context);
                     break;
                 case TaskType.TASK_TYPE_AMQP_PUBLISH:
+                    System.out.println("*********************case statement for task type");
                     valid = isAMQPPublishTaskValid(workflowTask, context);
                     break;
             }
@@ -243,6 +244,8 @@ public @interface WorkflowTaskTypeConstraint {
             boolean valid = true;
             boolean isInputParameterSet = false;
             boolean isInputTemplateSet = false;
+            
+            System.out.println("*********************is valid?");
 
             //Either kafka_request in WorkflowTask inputParam should be set or in inputTemplate Taskdef should be set
             if (workflowTask.getInputParameters() != null && workflowTask.getInputParameters().containsKey("amqp_request")) {
@@ -260,6 +263,8 @@ public @interface WorkflowTaskTypeConstraint {
                 context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
                 valid = false;
             }
+            
+            System.out.println("********************* validation said "+valid);
 
             return valid;
         }
