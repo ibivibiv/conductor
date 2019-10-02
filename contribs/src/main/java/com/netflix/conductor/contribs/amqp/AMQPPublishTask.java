@@ -99,6 +99,8 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 
 		try {
 			this.factory = new ConnectionFactory();
+			this.factory.setUsername("conductor");
+			this.factory.setPassword("conductor");
 			logger.info("AMQP Connection Factory initialized...");
 			this.factory.setHost(this.input.getHosts());
 
