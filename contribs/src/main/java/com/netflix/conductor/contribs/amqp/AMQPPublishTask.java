@@ -62,6 +62,7 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		this.requestParameter = REQUEST_PARAMETER_NAME;
 		this.producerManager = clientManager;
 		logger.info("AMQPTask initialized...");
+		System.out.println("*******************************check if I can debug this way");
 
 	}
 
