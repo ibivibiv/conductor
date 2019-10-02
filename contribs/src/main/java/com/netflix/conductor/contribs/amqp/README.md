@@ -3,7 +3,8 @@ This is a simple copy of the Kafka Publish Task that works with the AMQP impleme
 The task definition will look something like this:
 
 
-```{
+``` 
+{
             "name": "amqp_task_name",
             "taskReferenceName": "amqp_task_name",
             "inputParameters": {
@@ -17,4 +18,5 @@ The task definition will look something like this:
             "type": "AMQP_PUBLISH",
             "startDelay": 0,
             "optional": False
-        }```
+        }
+ ```
