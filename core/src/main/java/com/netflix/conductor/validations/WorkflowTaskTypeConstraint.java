@@ -5,6 +5,7 @@ import com.netflix.conductor.common.metadata.workflow.TaskType;
 import com.netflix.conductor.common.metadata.workflow.WorkflowTask;
 import com.netflix.conductor.common.run.Workflow;
 import com.netflix.conductor.core.execution.mapper.KafkaPublishTaskMapper;
+import com.netflix.conductor.core.execution.mapper.AMQPPublishTaskMapper;
 import com.netflix.conductor.core.execution.tasks.Terminate;
 
 import javax.validation.Constraint;
@@ -78,6 +79,9 @@ public @interface WorkflowTaskTypeConstraint {
                     break;
                 case TaskType.TASK_TYPE_KAFKA_PUBLISH:
                     valid = isKafkaPublishTaskValid(workflowTask, context);
+                    break;
+                case TaskType.TASK_TYPE_AMQP_PUBLISH:
+                    valid = isAMQPPublishTaskValid(workflowTask, context);
                     break;
             }
 
@@ -228,6 +232,31 @@ public @interface WorkflowTaskTypeConstraint {
 
             if (!(isInputParameterSet || isInputTemplateSet)) {
                 String message = String.format(PARAM_REQUIRED_STRING_FORMAT, "inputParameters.kafka_request", TaskType.KAFKA_PUBLISH, workflowTask.getName());
+                context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
+                valid = false;
+            }
+
+            return valid;
+        }
+        
+        private boolean isAMQPPublishTaskValid(WorkflowTask workflowTask, ConstraintValidatorContext context) {
+            boolean valid = true;
+            boolean isInputParameterSet = false;
+            boolean isInputTemplateSet = false;
+
+            //Either kafka_request in WorkflowTask inputParam should be set or in inputTemplate Taskdef should be set
+            if (workflowTask.getInputParameters() != null && workflowTask.getInputParameters().containsKey("amqp_request")) {
+                isInputParameterSet = true;
+            }
+
+            TaskDef taskDef = Optional.ofNullable(workflowTask.getTaskDefinition()).orElse(ValidationContext.getMetadataDAO().getTaskDef(workflowTask.getName()));
+
+            if (taskDef != null && taskDef.getInputTemplate() != null  && taskDef.getInputTemplate().containsKey("amqp_request")) {
+                isInputTemplateSet = true;
+            }
+
+            if (!(isInputParameterSet || isInputTemplateSet)) {
+                String message = String.format(PARAM_REQUIRED_STRING_FORMAT, "inputParameters.amqp_request", TaskType.AMQP_PUBLISH, workflowTask.getName());
                 context.buildConstraintViolationWithTemplate(message).addConstraintViolation();
                 valid = false;
             }
