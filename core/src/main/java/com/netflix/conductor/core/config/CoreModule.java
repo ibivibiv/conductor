@@ -38,6 +38,7 @@ import com.netflix.conductor.core.execution.mapper.ForkJoinDynamicTaskMapper;
 import com.netflix.conductor.core.execution.mapper.ForkJoinTaskMapper;
 import com.netflix.conductor.core.execution.mapper.HTTPTaskMapper;
 import com.netflix.conductor.core.execution.mapper.JoinTaskMapper;
+import com.netflix.conductor.core.execution.mapper.AMQPPublishTaskMapper;
 import com.netflix.conductor.core.execution.mapper.KafkaPublishTaskMapper;
 import com.netflix.conductor.core.execution.mapper.LambdaTaskMapper;
 import com.netflix.conductor.core.execution.mapper.SimpleTaskMapper;
@@ -65,6 +66,7 @@ import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_
 import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_FORK_JOIN_DYNAMIC;
 import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_HTTP;
 import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_JOIN;
+import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_AMQP_PUBLISH;
 import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_KAFKA_PUBLISH;
 import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_LAMBDA;
 import static com.netflix.conductor.common.metadata.workflow.TaskType.TASK_TYPE_SIMPLE;
@@ -236,6 +238,14 @@ public class CoreModule extends AbstractModule {
     @Named(TASK_MAPPERS_QUALIFIER)
     public TaskMapper getKafkaPublishTaskMapper(ParametersUtils parametersUtils, MetadataDAO metadataDAO) {
         return new KafkaPublishTaskMapper(parametersUtils, metadataDAO);
+    }
+    
+    @ProvidesIntoMap
+    @StringMapKey(TASK_TYPE_AMQP_PUBLISH)
+    @Singleton
+    @Named(TASK_MAPPERS_QUALIFIER)
+    public TaskMapper getAMQPPublishTaskMapper(ParametersUtils parametersUtils, MetadataDAO metadataDAO) {
+        return new AMQPPublishTaskMapper(parametersUtils, metadataDAO);
     }
 
 }
