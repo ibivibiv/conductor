@@ -19,6 +19,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class AMQPPublishTaskMapper implements TaskMapper  {
+	
+	System.out.println("*********************start task mapper");
 	public static final Logger logger = LoggerFactory.getLogger(AMQPPublishTaskMapper.class);
 
 	private final ParametersUtils parametersUtils;
@@ -72,6 +74,9 @@ public class AMQPPublishTaskMapper implements TaskMapper  {
 			amqpPublishTask.setRateLimitPerFrequency(taskDefinition.getRateLimitPerFrequency());
 			amqpPublishTask.setRateLimitFrequencyInSeconds(taskDefinition.getRateLimitFrequencyInSeconds());
 		}
+		
+		System.out.println("*********************stop task mapper");
+		
 		return Collections.singletonList(amqpPublishTask);
 	}
 }
