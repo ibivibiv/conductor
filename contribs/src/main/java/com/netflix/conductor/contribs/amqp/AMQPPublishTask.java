@@ -84,26 +84,33 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		System.out.println("******************************* start publish ");
 
 		long taskStartMillis = Instant.now().toEpochMilli();
+		System.out.println("******************************* millis ");
 		task.setWorkerId(config.getServerId());
+		System.out.println("******************************* workerid ");
 		Object request = task.getInputData().get(requestParameter);
+		System.out.println("******************************* request ");
 
 		if (Objects.isNull(request)) {
 			markTaskAsFailed(task, MISSING_REQUEST);
+			System.out.println("******************************* missing request ");
 			return;
 		}
 
 		if (StringUtils.isBlank(input.getQueue())) {
 			markTaskAsFailed(task, MISSING_AMQP_QUEUE);
+			System.out.println("******************************* missing queue ");
 			return;
 		}
 
 		if (Objects.isNull(input.getValue())) {
 			markTaskAsFailed(task, MISSING_AMQP_VALUE);
+			System.out.println("******************************* missing input ");
 			return;
 		}
 
 		try {
 			this.factory = new ConnectionFactory();
+			System.out.println("******************************* factory ");
 			this.factory.setUsername("conductor");
 			this.factory.setPassword("conductor");
 			logger.info("AMQP Connection Factory initialized...");
