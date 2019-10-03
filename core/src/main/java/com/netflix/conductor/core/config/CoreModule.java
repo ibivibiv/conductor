@@ -245,6 +245,7 @@ public class CoreModule extends AbstractModule {
     @Singleton
     @Named(TASK_MAPPERS_QUALIFIER)
     public TaskMapper getAMQPPublishTaskMapper(ParametersUtils parametersUtils, MetadataDAO metadataDAO) {
+        System.out.println("*********************start core module get task mapper");
         return new AMQPPublishTaskMapper(parametersUtils, metadataDAO);
     }
 
