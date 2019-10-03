@@ -43,6 +43,8 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 	private static final String MISSING_HOST_SERVERS = "No boot strap servers specified";
 	private static final String MISSING_AMQP_QUEUE = "Missing AMQP topic. See documentation for AMQPTask for required input parameters";
 	private static final String MISSING_AMQP_VALUE = "Missing AMQP value.  See documentation for AMQPTask for required input parameters";
+	private static final String MISSING_AMQP_USERNAME = "Missing AMQP username.  See documentation for AMQPTask for required input parameters";
+	private static final String MISSING_AMQP_PASSWORD = "Missing AMQP password.  See documentation for AMQPTask for required input parameters";
 	private static final String FAILED_TO_INVOKE = "Failed to invoke AMQP task due to: ";
 
 	private ObjectMapper om = objectMapper();
@@ -105,8 +107,20 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 			System.out.println("******************************* missing queue " + input.getQueue());
 			return;
 		}
+		
+		if (StringUtils.isBlank(input.getUserName())) {
+			markTaskAsFailed(task, MISSING_AMQP_USERNAME);
+			System.out.println("******************************* missing queue " + input.getQueue());
+			return;
+		}
+		
+		if (StringUtils.isBlank(input.getPassword())) {
+			markTaskAsFailed(task, MISSING_AMQP_PASSWORD);
+			System.out.println("******************************* missing queue " + input.getQueue());
+			return;
+		}
 
-		System.out.println("******************************* queueu ok");
+		
 
 		if (Objects.isNull(input.getValue())) {
 			markTaskAsFailed(task, MISSING_AMQP_VALUE);
@@ -119,10 +133,10 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		try {
 			this.factory = new ConnectionFactory();
 			System.out.println("******************************* factory ");
-			this.factory.setUsername("conductor");
-			this.factory.setPassword("conductor");
+			this.factory.setUsername(input.getUserName());
+			this.factory.setPassword(input.getPassword());
 			logger.info("AMQP Connection Factory initialized...");
-			this.factory.setHost(this.input.getHosts());
+			this.factory.setHost(input.getHosts());
 
 			System.out.println("*******************************factory done");
 
@@ -131,11 +145,11 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 			System.out.println("*******************************connection made");
 
 			com.rabbitmq.client.Channel channel = connection.createChannel();
-			channel.queueDeclare(this.input.getQueue(), true, false, false, null);
+			channel.queueDeclare(input.getQueue(), true, false, false, null);
 			System.out.println("*******************************channel made");
 
-			channel.basicPublish("", this.input.getQueue(), MessageProperties.PERSISTENT_TEXT_PLAIN,
-					this.input.getValue().getBytes("UTF-8"));
+			channel.basicPublish("", input.getQueue(), MessageProperties.PERSISTENT_TEXT_PLAIN,
+					input.getValue().getBytes("UTF-8"));
 			System.out.println("*******************************published");
 
 			task.setStatus(Task.Status.COMPLETED);
@@ -180,6 +194,11 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		private Integer requestTimeoutMs;
 
 		private String queue;
+		
+		private String userName;
+		
+		private String password;
+		
 
 		public Map<String, Object> getHeaders() {
 			return headers;
@@ -219,6 +238,24 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 
 		public void setQueue(String queue) {
 			this.queue = queue;
+		}
+		
+		
+
+		public String getUserName() {
+			return userName;
+		}
+
+		public void setUserName(String userName) {
+			this.userName = userName;
+		}
+
+		public String getPassword() {
+			return password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 		@Override
