@@ -31,7 +31,7 @@ public class AMQPProducerManager {
 			requestTimeoutMs = String.valueOf(input.getRequestTimeoutMs());
 		}
 		
-		System.out.println("*********************stop get properties from input")
+		System.out.println("*********************stop get properties from input");
 
 		return configProperties;
 	}
