@@ -92,19 +92,19 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 
 		if (Objects.isNull(request)) {
 			markTaskAsFailed(task, MISSING_REQUEST);
-			System.out.println("******************************* missing request ");
+			System.out.println("******************************* missing request "+request);
 			return;
 		}
 
 		if (StringUtils.isBlank(input.getQueue())) {
 			markTaskAsFailed(task, MISSING_AMQP_QUEUE);
-			System.out.println("******************************* missing queue ");
+			System.out.println("******************************* missing queue "+input.getQueue());
 			return;
 		}
 
 		if (Objects.isNull(input.getValue())) {
 			markTaskAsFailed(task, MISSING_AMQP_VALUE);
-			System.out.println("******************************* missing input ");
+			System.out.println("******************************* missing input "+input.getValue());
 			return;
 		}
 
