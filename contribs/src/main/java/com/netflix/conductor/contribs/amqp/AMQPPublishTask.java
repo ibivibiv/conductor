@@ -107,20 +107,18 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 			System.out.println("******************************* missing queue " + input.getQueue());
 			return;
 		}
-		
+
 		if (StringUtils.isBlank(input.getUserName())) {
 			markTaskAsFailed(task, MISSING_AMQP_USERNAME);
-			System.out.println("******************************* missing queue " + input.getQueue());
-			return;
-		}
-		
-		if (StringUtils.isBlank(input.getPassword())) {
-			markTaskAsFailed(task, MISSING_AMQP_PASSWORD);
-			System.out.println("******************************* missing queue " + input.getQueue());
+			System.out.println("******************************* missing username " + input.getUserName());
 			return;
 		}
 
-		
+		if (StringUtils.isBlank(input.getPassword())) {
+			markTaskAsFailed(task, MISSING_AMQP_PASSWORD);
+			System.out.println("******************************* missing password " + input.getPassword());
+			return;
+		}
 
 		if (Objects.isNull(input.getValue())) {
 			markTaskAsFailed(task, MISSING_AMQP_VALUE);
@@ -194,11 +192,10 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		private Integer requestTimeoutMs;
 
 		private String queue;
-		
+
 		private String userName;
-		
+
 		private String password;
-		
 
 		public Map<String, Object> getHeaders() {
 			return headers;
@@ -239,8 +236,6 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 		public void setQueue(String queue) {
 			this.queue = queue;
 		}
-		
-		
 
 		public String getUserName() {
 			return userName;
