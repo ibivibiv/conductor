@@ -128,7 +128,7 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 			logger.info("Published message {}, Time taken {}", input, timeTakenToCompleteTask);
 
 		} catch (Exception e) {
-			System.out.println(e.printStackTrace());
+			e.printStackTrace();
 			logger.error(String.format("Failed to invoke amqp task for input {} - unknown exception: {}", input), e);
 			markTaskAsFailed(task, FAILED_TO_INVOKE + e.getMessage());
 		}
