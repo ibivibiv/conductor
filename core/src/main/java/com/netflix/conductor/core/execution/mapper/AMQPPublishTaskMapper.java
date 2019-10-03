@@ -20,7 +20,7 @@ import java.util.Optional;
 
 public class AMQPPublishTaskMapper implements TaskMapper  {
 	
-	System.out.println("*********************start task mapper");
+	
 	public static final Logger logger = LoggerFactory.getLogger(AMQPPublishTaskMapper.class);
 
 	private final ParametersUtils parametersUtils;
@@ -41,6 +41,8 @@ public class AMQPPublishTaskMapper implements TaskMapper  {
 	 */
 	@Override
 	public List<Task> getMappedTasks(TaskMapperContext taskMapperContext) throws TerminateWorkflowException {
+		
+		System.out.println("*********************start task mapper");
 
 		logger.debug("TaskMapperContext {} in AMQPPublishTaskMapper", taskMapperContext);
 
