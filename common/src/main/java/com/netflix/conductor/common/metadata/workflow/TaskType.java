@@ -20,7 +20,8 @@ public enum TaskType {
     EXCLUSIVE_JOIN(true),
     TERMINATE(true),
     KAFKA_PUBLISH(true),
-	AMQP_PUBLISH(true);
+    AMQP_PUBLISH(true),
+    AMQP_WAIT(true);
 
     /**
      * TaskType constants representing each of the possible enumeration values.
