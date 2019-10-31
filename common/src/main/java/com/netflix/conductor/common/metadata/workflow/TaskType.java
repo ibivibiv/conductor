@@ -43,6 +43,7 @@ public enum TaskType {
     public static final String TASK_TYPE_TERMINATE = "TERMINATE";
     public static final String TASK_TYPE_KAFKA_PUBLISH = "KAFKA_PUBLISH";
     public static final String TASK_TYPE_AMQP_PUBLISH = "AMQP_PUBLISH";
+    public static final String TASK_TYPE_AMQP_WAIT = "AMQP_WAIT";
     
     private boolean isSystemTask;
 
