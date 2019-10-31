@@ -76,8 +76,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 	@Override
 	public void start(Workflow workflow, Task task, WorkflowExecutor executor) {
-		// TODO Auto-generated method stub
-		super.start(workflow, task, executor);
+		task.setStatus(Status.IN_PROGRESS);
 	}
 
 	@Override
