@@ -6,6 +6,7 @@ import com.google.inject.util.Modules;
 import com.netflix.conductor.cassandra.CassandraModule;
 import com.netflix.conductor.common.utils.ExternalPayloadStorage;
 import com.netflix.conductor.contribs.amqp.AMQPProducerManager;
+import com.netflix.conductor.contribs.amqp.AMQPWaitManager;
 import com.netflix.conductor.contribs.http.RestClientManager;
 import com.netflix.conductor.contribs.json.JsonJqTransform;
 import com.netflix.conductor.contribs.kafka.KafkaProducerManager;
@@ -141,6 +142,7 @@ public class ModulesProvider implements Provider<List<AbstractModule>> {
 		new HttpTask(new RestClientManager(configuration), configuration);
 		new KafkaPublishTask(configuration, new KafkaProducerManager(configuration));
 		new AMQPPublishTask(configuration, new AMQPProducerManager(configuration));
+		new AMQPWaitTask(configuration, new AMQPWaitManager(configuration));
 		new JsonJqTransform();
 		modules.add(new ServerModule());
 
