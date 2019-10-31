@@ -44,7 +44,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 	private ObjectMapper om = objectMapper();
 	private Configuration config;
 	private String requestParameter;
-	AMQPProducerManager producerManager;
+	AMQPWaitManager waitManager;
 	private ConnectionFactory factory;
 	private Connection connection;
 	private AMQPWaitTask.Input input;
@@ -52,11 +52,11 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 	private static final Logger logger = LoggerFactory.getLogger(AMQPWaitTask.class);
 
 	@Inject
-	public AMQPWaitTask(Configuration config, AMQPProducerManager clientManager) {
+	public AMQPWaitTask(Configuration config, AMQPWaitManager clientManager) {
 		super(NAME);
 		this.config = config;
 		this.requestParameter = REQUEST_PARAMETER_NAME;
-		this.producerManager = clientManager;
+		this.waitManager = clientManager;
 		logger.info("AMQPTask initialized...");
 		System.out.println("*******************************check if I can debug this way");
 
