@@ -157,8 +157,10 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 						consumed = true;
 						channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
 					}
+					if (channel.isOpen()) {
 
-					channel.close();
+						channel.close();
+					}
 				}
 				if (connection.isOpen()) {
 					connection.close();
