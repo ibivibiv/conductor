@@ -145,7 +145,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 			com.rabbitmq.client.Channel channel = connection.createChannel();
 			channel.queueDeclare(workflow.getWorkflowId() + task.getTaskDefName(), true, false, true, null);
 
-			GetResponse response = channel.basicGet(input.getQueue(), false);
+			GetResponse response = channel.basicGet(workflow.getWorkflowId() + task.getTaskDefName(), false);
 			if (response != null) {
 				String message = new String(response.getBody(), "UTF-8");
 				task.setStatus(Status.COMPLETED);
