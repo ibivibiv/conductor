@@ -76,7 +76,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 	@Override
 	public void start(Workflow workflow, Task task, WorkflowExecutor executor) {
-		
+
 	}
 
 	@Override
@@ -142,22 +142,27 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 			this.connection = factory.newConnection();
 
-			com.rabbitmq.client.Channel channel = connection.createChannel();
-			channel.queueDeclare(workflow.getWorkflowId() + task.getTaskDefName(), true, false, true, null);
+			if (connection.isOpen()) {
 
-			GetResponse response = channel.basicGet(workflow.getWorkflowId() + task.getTaskDefName(), false);
-			if (response != null) {
-				String message = new String(response.getBody(), "UTF-8");
-				task.setStatus(Status.COMPLETED);
-				System.out.println("*******************************set completed");
+				com.rabbitmq.client.Channel channel = connection.createChannel();
+				channel.queueDeclare(workflow.getWorkflowId() + task.getTaskDefName(), true, false, true, null);
 
-				consumed = true;
-				channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+				if (channel.isOpen()) {
+					GetResponse response = channel.basicGet(workflow.getWorkflowId() + task.getTaskDefName(), false);
+					if (response != null) {
+						String message = new String(response.getBody(), "UTF-8");
+						task.setStatus(Status.COMPLETED);
+						System.out.println("*******************************set completed");
+
+						consumed = true;
+						channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+					}
+
+					channel.close();
+				}
+				connection.close();
+
 			}
-
-			channel.close();
-			connection.close();
-
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(String.format("Failed to invoke amqp task for input {} - unknown exception: {}", input), e);
