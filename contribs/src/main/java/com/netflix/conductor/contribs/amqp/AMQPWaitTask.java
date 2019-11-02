@@ -76,7 +76,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 	@Override
 	public void start(Workflow workflow, Task task, WorkflowExecutor executor) {
-		task.setStatus(Status.IN_PROGRESS);
+		
 	}
 
 	@Override
