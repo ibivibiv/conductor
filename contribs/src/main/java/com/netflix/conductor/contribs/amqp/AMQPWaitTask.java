@@ -160,7 +160,9 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 					channel.close();
 				}
-				connection.close();
+				if (connection.isOpen()) {
+					connection.close();
+				}
 
 			}
 		} catch (Exception e) {
