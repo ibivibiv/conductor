@@ -144,6 +144,8 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 			if (connection.isOpen()) {
 
+				Map<String, Object> args = new HashMap<String, Object>();
+				args.put("x-message-ttl", 300000);
 				com.rabbitmq.client.Channel channel = connection.createChannel();
 				channel.queueDeclare(workflow.getWorkflowId() + task.getTaskDefName(), true, false, true, null);
 
