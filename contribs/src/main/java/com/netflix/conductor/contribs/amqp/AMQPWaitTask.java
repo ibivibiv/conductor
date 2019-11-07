@@ -142,7 +142,11 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 			this.connection = factory.newConnection();
 
+			System.out.println("*******************************new connection made");
+
 			if (connection.isOpen()) {
+
+				System.out.println("*******************************connection open");
 
 				Map<String, Object> args = new HashMap<String, Object>();
 				args.put("x-message-ttl", 300000);
@@ -150,16 +154,23 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 				channel.queueDeclare(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), true, false,
 						true, null);
 
+				System.out.println("*******************************new channel/queue made");
+
 				if (channel.isOpen()) {
+					System.out.println("*******************************channel open");
 					GetResponse response = channel
 							.basicGet(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), false);
+					System.out.println("*******************************got response");
+					System.out.println(response.toString());
 					if (response != null) {
+						System.out.println("*******************************got message");
 						String message = new String(response.getBody(), "UTF-8");
 						task.setStatus(Status.COMPLETED);
 						System.out.println("*******************************set completed");
 
 						consumed = true;
 						channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+						System.out.println("*******************************acked and consumed set");
 					}
 					if (channel.isOpen()) {
 
@@ -179,6 +190,8 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 		}
 
 		task.setRetryCount(task.getRetryCount() + 1);
+
+		System.out.println("*******************************set retry count");
 
 		return consumed;
 	}
