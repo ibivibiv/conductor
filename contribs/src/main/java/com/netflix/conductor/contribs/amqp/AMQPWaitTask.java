@@ -189,9 +189,9 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 			// consumed = true;
 		}
 
-		task.setRetryCount(task.getRetryCount() + 1);
+		// task.setRetryCount(task.getRetryCount() + 1);
 
-		System.out.println("*******************************set retry count");
+		System.out.println("*******************************returning consumed " + consumed);
 
 		return consumed;
 	}
