@@ -42,7 +42,7 @@ public class AMQPPublishTaskMapper implements TaskMapper  {
 	@Override
 	public List<Task> getMappedTasks(TaskMapperContext taskMapperContext) throws TerminateWorkflowException {
 		
-		System.out.println("*********************start task mapper");
+		
 
 		logger.debug("TaskMapperContext {} in AMQPPublishTaskMapper", taskMapperContext);
 
@@ -77,7 +77,7 @@ public class AMQPPublishTaskMapper implements TaskMapper  {
 			amqpPublishTask.setRateLimitFrequencyInSeconds(taskDefinition.getRateLimitFrequencyInSeconds());
 		}
 		
-		System.out.println("*********************stop task mapper");
+		
 		
 		return Collections.singletonList(amqpPublishTask);
 	}
