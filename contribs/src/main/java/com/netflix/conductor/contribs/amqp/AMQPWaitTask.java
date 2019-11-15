@@ -21,6 +21,7 @@ import com.netflix.conductor.core.config.Configuration;
 import com.netflix.conductor.core.execution.WorkflowExecutor;
 import com.netflix.conductor.core.execution.tasks.WorkflowSystemTask;
 import com.netflix.conductor.common.metadata.tasks.Task.Status;
+import com.netflix.conductor.common.metadata.tasks.TaskResult;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -58,19 +59,18 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 		this.requestParameter = REQUEST_PARAMETER_NAME;
 		this.waitManager = clientManager;
 		logger.info("AMQPTask initialized...");
-		System.out.println("*******************************check if I can debug this way");
 
 	}
 
 	private static ObjectMapper objectMapper() {
-		System.out.println("******************************* mapper start");
+
 		final ObjectMapper om = new ObjectMapper();
 		om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		om.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
 		om.configure(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES, false);
 		om.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 		om.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
-		System.out.println("******************************* mapper stop");
+
 		return om;
 	}
 
@@ -82,86 +82,66 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 	@Override
 	public boolean execute(Workflow workflow, Task task, WorkflowExecutor executor) {
 
-		System.out.println("******************************* start wait ");
-
 		long taskStartMillis = Instant.now().toEpochMilli();
-		System.out.println("******************************* millis ");
+
 		task.setWorkerId(config.getServerId());
-		System.out.println("******************************* workerid ");
+
 		Object request = task.getInputData().get(requestParameter);
 		System.out.println("******************************* request " + request.toString());
 
 		if (Objects.isNull(request)) {
 			markTaskAsFailed(task, MISSING_REQUEST);
-			System.out.println("******************************* missing request " + request);
+
 			return false;
 		}
 
 		AMQPWaitTask.Input input = om.convertValue(request, AMQPWaitTask.Input.class);
 
-		System.out.println("******************************* request ok");
-
 		if (StringUtils.isBlank(input.getQueue())) {
 			markTaskAsFailed(task, MISSING_AMQP_QUEUE);
-			System.out.println("******************************* missing queue " + input.getQueue());
+
 			return false;
 		}
 
 		if (StringUtils.isBlank(input.getUserName())) {
 			markTaskAsFailed(task, MISSING_AMQP_USERNAME);
-			System.out.println("******************************* missing username " + input.getUserName());
+
 			return false;
 		}
 
 		if (StringUtils.isBlank(input.getPassword())) {
 			markTaskAsFailed(task, MISSING_AMQP_PASSWORD);
-			System.out.println("******************************* missing password " + input.getPassword());
+
 			return false;
 		}
 
 		if (Objects.isNull(input.getValue())) {
 			markTaskAsFailed(task, MISSING_AMQP_VALUE);
-			System.out.println("******************************* missing input " + input.getValue());
+
 			return false;
 		}
-
-		System.out.println("******************************* value ok");
 
 		boolean consumed = false;
 
 		try {
 
 			this.factory = new ConnectionFactory();
-			System.out.println("******************************* factory ");
 			this.factory.setUsername(input.getUserName());
 			this.factory.setPassword(input.getPassword());
 			logger.info("AMQP Connection Factory initialized...");
 			this.factory.setHost(input.getHosts());
 
-			System.out.println("*******************************factory done");
-
 			this.connection = factory.newConnection();
 
-			System.out.println("*******************************new connection made");
-
 			if (connection.isOpen()) {
-
-				System.out.println("*******************************connection open");
-
 				Map<String, Object> args = new HashMap<String, Object>();
 				args.put("x-message-ttl", 300000);
 				com.rabbitmq.client.Channel channel = connection.createChannel();
 				channel.queueDeclare(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), true, false,
 						true, null);
-
-				System.out.println("*******************************new channel/queue made");
-
 				if (channel.isOpen()) {
-					System.out.println("*******************************channel open");
 					GetResponse response = channel
 							.basicGet(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), false);
-					System.out.println("*******************************got response");
-					System.out.println(response);
 					if (response != null) {
 						System.out.println("*******************************got message");
 						String message = new String(response.getBody(), "UTF-8");
@@ -171,6 +151,13 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 						consumed = true;
 						channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
 						System.out.println("*******************************acked and consumed set");
+						TaskResult taskResult = new TaskResult();
+						taskResult.setTaskId(task.getTaskId());
+						taskResult.setStatus(TaskResult.Status.COMPLETED);
+						taskResult.setWorkerId("RabbitMQ");
+						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
+						executor.updateTask(taskResult);
+						System.out.println("*******************************hacked up a definite persist of complete of task");
 					}
 					if (channel.isOpen()) {
 
