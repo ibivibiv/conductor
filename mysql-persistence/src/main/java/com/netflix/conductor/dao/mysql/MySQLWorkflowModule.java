@@ -31,7 +31,7 @@ public class MySQLWorkflowModule extends AbstractModule {
         dataSource.setAutoCommit(false);
         
         dataSource.setMaximumPoolSize(20);
-        dataSource.setMinimumIdle(config.getIntProperty(5);
+        dataSource.setMinimumIdle(5);
         dataSource.setIdleTimeout(1000*300);
         dataSource.setTransactionIsolation("TRANSACTION_REPEATABLE_READ");
         
