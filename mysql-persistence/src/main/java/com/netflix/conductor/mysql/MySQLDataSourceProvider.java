@@ -39,8 +39,8 @@ public class MySQLDataSourceProvider implements Provider<DataSource> {
         cfg.setMaximumPoolSize(5);
         cfg.setMinimumIdle(5);
         cfg.setMaxLifetime(configuration.getConnectionMaxLifetime());
-        cfg.setIdleTimeout(1000);
-        cfg.setConnectionTimeout(1000);
+        cfg.setIdleTimeout(10000);
+        cfg.setConnectionTimeout(10000);
         cfg.setTransactionIsolation(configuration.getTransactionIsolationLevel());
         cfg.setAutoCommit(configuration.isAutoCommit());
 
