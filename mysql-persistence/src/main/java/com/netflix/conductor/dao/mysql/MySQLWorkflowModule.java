@@ -30,10 +30,10 @@ public class MySQLWorkflowModule extends AbstractModule {
         dataSource.setPassword(config.getProperty("jdbc.password", "password"));
         dataSource.setAutoCommit(false);
         
-        dataSource.setMaximumPoolSize(config.getIntProperty("jdbc.maxPoolSize", 20));
-        dataSource.setMinimumIdle(config.getIntProperty("jdbc.minIdleSize", 5));
-        dataSource.setIdleTimeout(config.getIntProperty("jdbc.idleTimeout", 1000*300));
-        dataSource.setTransactionIsolation(config.getProperty("jdbc.isolationLevel", "TRANSACTION_REPEATABLE_READ"));
+        dataSource.setMaximumPoolSize(20);
+        dataSource.setMinimumIdle(config.getIntProperty(5);
+        dataSource.setIdleTimeout(1000*300);
+        dataSource.setTransactionIsolation("TRANSACTION_REPEATABLE_READ");
         
         flywayMigrate(config, dataSource);
 
