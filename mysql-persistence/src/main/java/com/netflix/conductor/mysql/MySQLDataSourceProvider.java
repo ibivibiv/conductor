@@ -36,7 +36,7 @@ public class MySQLDataSourceProvider implements Provider<DataSource> {
         cfg.setUsername(configuration.getJdbcUserName());
         cfg.setPassword(configuration.getJdbcPassword());
         cfg.setAutoCommit(false);
-        cfg.setMaximumPoolSize(20);
+        cfg.setMaximumPoolSize(10);
         cfg.setMinimumIdle(5);
         cfg.setMaxLifetime(configuration.getConnectionMaxLifetime());
         cfg.setIdleTimeout(300000);
