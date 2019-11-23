@@ -42,6 +42,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 	private static final String MISSING_AMQP_USERNAME = "Missing AMQP username.  See documentation for AMQPTask for required input parameters";
 	private static final String MISSING_AMQP_PASSWORD = "Missing AMQP password.  See documentation for AMQPTask for required input parameters";
 	private static final String FAILED_TO_INVOKE = "Failed to invoke AMQP task due to: ";
+	private static final String NO_MESSAGE = "No message available before timeout";
 
 	private ObjectMapper om = objectMapper();
 	private Configuration config;
@@ -184,11 +185,9 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 		if (!consumed) {
 			System.out.println("*******************************rereunning " + consumed);
-			RerunWorkflowRequest rerun = new RerunWorkflowRequest();
-			rerun.setReRunFromWorkflowId(task.getWorkflowInstanceId());
-			rerun.setReRunFromTaskId(task.getTaskId());
-			rerun.setWorkflowInput(new HashMap<String, Object>());
-			executor.rerun(rerun);
+			task.setReasonForIncompletion(NO_MESSAGE);
+			task.setStatus(Status.FAILED);
+			consumed = true;
 		}
 
 		return consumed;
