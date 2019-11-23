@@ -175,12 +175,16 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 			e.printStackTrace();
 			logger.error(String.format("Failed to invoke amqp task for input {} - unknown exception: {}", input), e);
 			// markTaskAsFailed(task, FAILED_TO_INVOKE + e.getMessage());
-			// consumed = true;
 		}
 
 		// task.setRetryCount(task.getRetryCount() + 1);
 
 		System.out.println("*******************************returning consumed " + consumed);
+
+		if (!consumed) {
+			task.setTaskStatus(Task.Status.SCHEDULED);
+			executor.addTaskToQueue(task);
+		}
 
 		return consumed;
 	}
