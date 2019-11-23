@@ -76,6 +76,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 	@Override
 	public void start(Workflow workflow, Task task, WorkflowExecutor executor) {
+		task.setStatus(Status.IN_PROGRESS);
 
 	}
 
@@ -157,7 +158,8 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 						taskResult.setWorkerId("RabbitMQ");
 						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
 						executor.updateTask(taskResult);
-						System.out.println("*******************************hacked up a definite persist of complete of task");
+						System.out.println(
+								"*******************************hacked up a definite persist of complete of task");
 					}
 					if (channel.isOpen()) {
 
