@@ -22,6 +22,7 @@ import com.netflix.conductor.core.execution.WorkflowExecutor;
 import com.netflix.conductor.core.execution.tasks.WorkflowSystemTask;
 import com.netflix.conductor.common.metadata.tasks.Task.Status;
 import com.netflix.conductor.common.metadata.tasks.TaskResult;
+import com.netflix.conductor.common.metadata.workflow.RerunWorkflowRequest;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -182,8 +183,12 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 		System.out.println("*******************************returning consumed " + consumed);
 
 		if (!consumed) {
-			task.setTaskStatus(Task.Status.SCHEDULED);
-			executor.addTaskToQueue(task);
+			System.out.println("*******************************rereunning " + consumed);
+			RerunWorkflowRequest rerun = new RerunWorkflowRequest();
+			rerun.setReRunFromWorkflowId(task.getWorkflowInstanceId());
+			rerun.setReRunFromTaskId(task.getTaskId());
+			rerun.setWorkflowInput("");
+			executor.rerun(rerun);
 		}
 
 		return consumed;
