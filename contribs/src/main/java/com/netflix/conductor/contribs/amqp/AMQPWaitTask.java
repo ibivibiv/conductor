@@ -187,7 +187,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 			RerunWorkflowRequest rerun = new RerunWorkflowRequest();
 			rerun.setReRunFromWorkflowId(task.getWorkflowInstanceId());
 			rerun.setReRunFromTaskId(task.getTaskId());
-			rerun.setWorkflowInput("");
+			rerun.setWorkflowInput(new HashMap<String, Object>());
 			executor.rerun(rerun);
 		}
 
