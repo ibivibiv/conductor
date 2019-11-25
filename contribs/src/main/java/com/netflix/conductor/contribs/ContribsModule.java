@@ -50,7 +50,7 @@ public class ContribsModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		bind(QueueManager.class).asEagerSingleton();
-		bind(AMQPWaitListener.class).asEagerSingleton();
+		//bind(AMQPWaitListener.class).asEagerSingleton();
 		// bind(SQSEventQueueProvider.class).asEagerSingleton();
 	}
 
