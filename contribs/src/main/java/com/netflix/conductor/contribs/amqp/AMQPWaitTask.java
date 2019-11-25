@@ -167,7 +167,8 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 						taskResult.setWorkerId("RabbitMQ");
 						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
 						executor.updateTask(taskResult);
-						System.out.println(
+
+						executor.System.out.println(
 								"*******************************hacked up a definite persist of complete of task");
 						this.channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
 
@@ -179,7 +180,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(String.format("Failed to invoke amqp task for input {} - unknown exception: {}", input), e);
-			markTaskAsFailed(task, FAILED_TO_INVOKE + e.getMessage());
+			// markTaskAsFailed(task, FAILED_TO_INVOKE + e.getMessage());
 			try {
 				this.channel.basicNack(this.deliveryTag, false, true);
 			} catch (IOException e1) {
