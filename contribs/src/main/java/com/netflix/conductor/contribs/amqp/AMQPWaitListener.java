@@ -16,8 +16,8 @@ public class AMQPWaitListener {
 
 		//Injector injector = Guice.createInjector(new WorkflowExecutorModule());
 		//TaskService taskService = injector.getInstance(TaskServiceImpl.class);
-		//Thread listener = new Thread(new Listener());
-		//listener.start();
+		Thread listener = new Thread(new Listener());
+		listener.start();
 
 	}
 
