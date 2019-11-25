@@ -150,9 +150,9 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 					GetResponse response = channel
 							.basicGet(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), false);
 
-					this.deliveryTag = response.getEnvelope().getDeliveryTag();
-
 					if (response != null) {
+						this.deliveryTag = response.getEnvelope().getDeliveryTag();
+
 						System.out.println("*******************************got message");
 						String message = new String(response.getBody(), "UTF-8");
 
