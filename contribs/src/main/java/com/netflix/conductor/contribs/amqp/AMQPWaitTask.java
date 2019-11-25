@@ -1,9 +1,11 @@
 package com.netflix.conductor.contribs.amqp;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -50,6 +52,8 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 	AMQPWaitManager waitManager;
 	private ConnectionFactory factory;
 	private Connection connection;
+	private com.rabbitmq.client.Channel channel;
+	private long deliveryTag;
 	private AMQPWaitTask.Input input;
 
 	private static final Logger logger = LoggerFactory.getLogger(AMQPWaitTask.class);
@@ -139,52 +143,78 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 			if (connection.isOpen()) {
 				Map<String, Object> args = new HashMap<String, Object>();
 				args.put("x-message-ttl", 300000);
-				com.rabbitmq.client.Channel channel = connection.createChannel();
-				channel.queueDeclare(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), true, false,
-						true, null);
-				if (channel.isOpen()) {
+				this.channel = connection.createChannel();
+				this.channel.queueDeclare(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), true,
+						false, true, null);
+				if (this.channel.isOpen()) {
 					GetResponse response = channel
 							.basicGet(workflow.getInput().get("mac_id").toString() + task.getTaskDefName(), false);
+
+					this.deliveryTag = response.getEnvelope().getDeliveryTag();
+
 					if (response != null) {
 						System.out.println("*******************************got message");
 						String message = new String(response.getBody(), "UTF-8");
 
 						System.out.println("*******************************set completed");
 
-						channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
 						consumed = true;
 						task.setStatus(Status.COMPLETED);
 						System.out.println("*******************************acked and consumed set");
-//						TaskResult taskResult = new TaskResult();
-//						taskResult.setTaskId(task.getTaskId());
-//						taskResult.setStatus(TaskResult.Status.COMPLETED);
-//						taskResult.setWorkerId("RabbitMQ");
-//						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
-//						executor.updateTask(taskResult);
-//						System.out.println(
-//								"*******************************hacked up a definite persist of complete of task");
-					}
-					if (channel.isOpen()) {
+						TaskResult taskResult = new TaskResult();
+						taskResult.setTaskId(task.getTaskId());
+						taskResult.setStatus(TaskResult.Status.COMPLETED);
+						taskResult.setWorkerId("RabbitMQ");
+						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
+						executor.updateTask(taskResult);
+						System.out.println(
+								"*******************************hacked up a definite persist of complete of task");
+						this.channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
 
-						channel.close();
 					}
+				}
+
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(String.format("Failed to invoke amqp task for input {} - unknown exception: {}", input), e);
+			markTaskAsFailed(task, FAILED_TO_INVOKE + e.getMessage());
+			try {
+				this.channel.basicNack(this.deliveryTag, false, true);
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		} finally {
+			try {
+
+				if (this.channel.isOpen()) {
+
+					channel.close();
+
 				}
 				if (connection.isOpen()) {
 					connection.close();
 				}
 
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (TimeoutException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(String.format("Failed to invoke amqp task for input {} - unknown exception: {}", input), e);
-			// markTaskAsFailed(task, FAILED_TO_INVOKE + e.getMessage());
+
 		}
 
 		// task.setRetryCount(task.getRetryCount() + 1);
 
 		System.out.println("*******************************returning consumed " + consumed);
 
-		if (!consumed) {
+		if (!consumed)
+
+		{
 			System.out.println("*******************************rereunning " + consumed);
 			task.setReasonForIncompletion(NO_MESSAGE);
 			task.setStatus(Status.FAILED);
