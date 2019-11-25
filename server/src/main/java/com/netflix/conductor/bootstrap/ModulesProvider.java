@@ -13,6 +13,7 @@ import com.netflix.conductor.contribs.kafka.KafkaProducerManager;
 import com.netflix.conductor.contribs.kafka.KafkaPublishTask;
 import com.netflix.conductor.contribs.amqp.AMQPPublishTask;
 import com.netflix.conductor.contribs.amqp.AMQPWaitTask;
+import com.netflix.conductor.contribs.amqp.AMQPWaitListener;
 import com.netflix.conductor.contribs.http.HttpTask;
 import com.netflix.conductor.core.config.Configuration;
 import com.netflix.conductor.core.execution.WorkflowExecutorModule;
