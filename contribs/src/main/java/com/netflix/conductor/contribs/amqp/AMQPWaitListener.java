@@ -23,7 +23,7 @@ public class AMQPWaitListener {
 
 				try {
 					ConnectionFactory factory = new ConnectionFactory();
-					factory.setHost("localhost");
+					factory.setHost("rabbitmq-headless");
 					factory.setUsername("conductor");
 					factory.setPassword("conductor");
 					Connection connection = factory.newConnection();
