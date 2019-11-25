@@ -82,9 +82,13 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 	@Override
 	public void start(Workflow workflow, Task task, WorkflowExecutor executor) {
-		long taskStartMillis = Instant.now().toEpochMilli();
+		// long taskStartMillis = Instant.now().toEpochMilli();
+		
+		task.setStatus(Task.Status.IN_PROGRESS);
 
 		task.setWorkerId(config.getServerId());
+
+		
 
 		Object request = task.getInputData().get(requestParameter);
 		System.out.println("******************************* request " + request.toString());
