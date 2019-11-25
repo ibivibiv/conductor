@@ -144,6 +144,7 @@ public class ModulesProvider implements Provider<List<AbstractModule>> {
 		new KafkaPublishTask(configuration, new KafkaProducerManager(configuration));
 		new AMQPPublishTask(configuration, new AMQPProducerManager(configuration));
 		new AMQPWaitTask(configuration, new AMQPWaitManager(configuration));
+		new AMQPWaitListener();
 		new JsonJqTransform();
 		modules.add(new ServerModule());
 
