@@ -148,20 +148,21 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 					if (response != null) {
 						System.out.println("*******************************got message");
 						String message = new String(response.getBody(), "UTF-8");
-						task.setStatus(Status.COMPLETED);
+
 						System.out.println("*******************************set completed");
 
-						consumed = true;
 						channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
+						consumed = true;
+						task.setStatus(Status.COMPLETED);
 						System.out.println("*******************************acked and consumed set");
-						TaskResult taskResult = new TaskResult();
-						taskResult.setTaskId(task.getTaskId());
-						taskResult.setStatus(TaskResult.Status.COMPLETED);
-						taskResult.setWorkerId("RabbitMQ");
-						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
-						executor.updateTask(taskResult);
-						System.out.println(
-								"*******************************hacked up a definite persist of complete of task");
+//						TaskResult taskResult = new TaskResult();
+//						taskResult.setTaskId(task.getTaskId());
+//						taskResult.setStatus(TaskResult.Status.COMPLETED);
+//						taskResult.setWorkerId("RabbitMQ");
+//						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
+//						executor.updateTask(taskResult);
+//						System.out.println(
+//								"*******************************hacked up a definite persist of complete of task");
 					}
 					if (channel.isOpen()) {
 
