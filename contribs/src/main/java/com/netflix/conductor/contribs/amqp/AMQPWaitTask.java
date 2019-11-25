@@ -82,13 +82,6 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 	@Override
 	public void start(Workflow workflow, Task task, WorkflowExecutor executor) {
-		task.setStatus(Status.IN_PROGRESS);
-
-	}
-
-	@Override
-	public boolean execute(Workflow workflow, Task task, WorkflowExecutor executor) {
-
 		long taskStartMillis = Instant.now().toEpochMilli();
 
 		task.setWorkerId(config.getServerId());
@@ -99,7 +92,6 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 		if (Objects.isNull(request)) {
 			markTaskAsFailed(task, MISSING_REQUEST);
 
-			return false;
 		}
 
 		AMQPWaitTask.Input input = om.convertValue(request, AMQPWaitTask.Input.class);
@@ -107,28 +99,22 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 		if (StringUtils.isBlank(input.getQueue())) {
 			markTaskAsFailed(task, MISSING_AMQP_QUEUE);
 
-			return false;
 		}
 
 		if (StringUtils.isBlank(input.getUserName())) {
 			markTaskAsFailed(task, MISSING_AMQP_USERNAME);
 
-			return false;
 		}
 
 		if (StringUtils.isBlank(input.getPassword())) {
 			markTaskAsFailed(task, MISSING_AMQP_PASSWORD);
 
-			return false;
 		}
 
 		if (Objects.isNull(input.getValue())) {
 			markTaskAsFailed(task, MISSING_AMQP_VALUE);
 
-			return false;
 		}
-
-		boolean consumed = false;
 
 		try {
 
@@ -158,7 +144,6 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 						System.out.println("*******************************set completed");
 
-						consumed = true;
 						task.setStatus(Status.COMPLETED);
 						System.out.println("*******************************acked and consumed set");
 						TaskResult taskResult = new TaskResult();
@@ -168,7 +153,7 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
 						executor.updateTask(taskResult);
 
-						executor.System.out.println(
+						System.out.println(
 								"*******************************hacked up a definite persist of complete of task");
 						this.channel.basicAck(response.getEnvelope().getDeliveryTag(), false);
 
@@ -209,20 +194,12 @@ public class AMQPWaitTask extends WorkflowSystemTask {
 
 		}
 
-		// task.setRetryCount(task.getRetryCount() + 1);
+	}
 
-		System.out.println("*******************************returning consumed " + consumed);
+	@Override
+	public boolean execute(Workflow workflow, Task task, WorkflowExecutor executor) {
 
-		if (!consumed)
-
-		{
-			System.out.println("*******************************rereunning " + consumed);
-			task.setReasonForIncompletion(NO_MESSAGE);
-			task.setStatus(Status.FAILED);
-			consumed = true;
-		}
-
-		return consumed;
+		return false;
 	}
 
 	@Override
