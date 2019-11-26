@@ -7,14 +7,15 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
+import com.google.inject.name.Named;
 
 public class AMQPWaitListener {
 
-	@Inject
+	@Inject @Named("taskService")
 	TaskServiceImpl taskService;
 
-	@Inject
-	WorkflowServiceImpl workflowService;
+	//@Inject
+	//WorkflowServiceImpl workflowService;
 
 	public AMQPWaitListener() {
 
@@ -30,7 +31,7 @@ public class AMQPWaitListener {
 
 			try {
 
-				workflowService.hashCode();
+				//workflowService.hashCode();
 				taskService.hashCode();
 
 				ConnectionFactory factory = new ConnectionFactory();
