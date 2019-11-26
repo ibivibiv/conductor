@@ -1,15 +1,18 @@
 package com.netflix.conductor.contribs.amqp;
 
-import com.google.inject.Inject;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 import com.netflix.conductor.client.http.TaskClient;
+import com.netflix.conductor.client.http.WorkflowClient;
+import com.netflix.conductor.common.metadata.tasks.Task;
+import com.netflix.conductor.common.metadata.tasks.TaskResult;
+import com.netflix.conductor.common.metadata.tasks.TaskResult.Status;
 
 public class AMQPWaitListener {
 
-	
+	private static final String URL = "http://localhost:8080/api/";
 
 	public AMQPWaitListener() {
 
@@ -26,7 +29,9 @@ public class AMQPWaitListener {
 			try {
 
 				TaskClient taskClient = new TaskClient();
-				taskClient.setRootURI("http://localhost:8080/api/");
+				WorkflowClient workflowClient = new WorkflowClient();
+				taskClient.setRootURI(URL);
+				workflowClient.setRootURI(URL);
 
 				ConnectionFactory factory = new ConnectionFactory();
 				factory.setHost("rabbitmq-headless");
@@ -39,10 +44,24 @@ public class AMQPWaitListener {
 				System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
 				DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-					String message = new String(delivery.getBody(), "UTF-8");
-					System.out.println(" [x] Received '" + message + "'");
+					try {
+						String message = new String(delivery.getBody(), "UTF-8");
+						System.out.println(" [x] Received '" + message + "'");
+						String[] split = message.split(",");
+						Task task = taskClient.getPendingTaskForWorkflow(split[1], split[0]);
+						TaskResult taskResult = new TaskResult();
+						taskResult.setTaskId(task.getTaskId());
+						taskResult.setStatus(Status.COMPLETED);
+						taskResult.setWorkerId("AMQPLISTER");
+						taskClient.updateTask(taskResult);
+					} catch (Exception x) {
+						x.printStackTrace();
+						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+					}
+					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+
 				};
-				channel.basicConsume("conductor", true, deliverCallback, consumerTag -> {
+				channel.basicConsume("conductor", false, deliverCallback, consumerTag -> {
 				});
 
 			} catch (Exception e) {
