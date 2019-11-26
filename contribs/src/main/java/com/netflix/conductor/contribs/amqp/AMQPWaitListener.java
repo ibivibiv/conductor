@@ -1,21 +1,15 @@
 package com.netflix.conductor.contribs.amqp;
 
 import com.google.inject.Inject;
-import com.netflix.conductor.service.WorkflowServiceImpl;
-import com.netflix.conductor.service.TaskServiceImpl;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
-import com.google.inject.name.Named;
+import com.netflix.conductor.client.http.TaskClient;
 
 public class AMQPWaitListener {
 
-	@Inject @Named("taskService")
-	TaskServiceImpl taskService;
-
-	//@Inject
-	//WorkflowServiceImpl workflowService;
+	
 
 	public AMQPWaitListener() {
 
@@ -31,8 +25,8 @@ public class AMQPWaitListener {
 
 			try {
 
-				//workflowService.hashCode();
-				taskService.hashCode();
+				TaskClient taskClient = new TaskClient();
+				taskClient.setRootURI("http://localhost:8080/api/");
 
 				ConnectionFactory factory = new ConnectionFactory();
 				factory.setHost("rabbitmq-headless");
