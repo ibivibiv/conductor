@@ -31,6 +31,8 @@ public class AMQPWaitListener {
 		@Override
 		public void run() {
 
+			outer:
+
 			try {
 
 				TaskClient taskClient = new TaskClient();
@@ -71,6 +73,7 @@ public class AMQPWaitListener {
 					} catch (Exception x) {
 						x.printStackTrace();
 						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+
 					}
 					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 
@@ -80,6 +83,7 @@ public class AMQPWaitListener {
 
 			} catch (Exception e) {
 				e.printStackTrace();
+				break outer;
 			}
 
 		}
