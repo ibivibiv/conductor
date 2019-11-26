@@ -1,7 +1,7 @@
 package com.netflix.conductor.contribs.amqp;
 
 import com.google.inject.Inject;
-import com.netflix.conductor.server.ServerModule;
+
 import com.netflix.conductor.service.ExecutionService;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -13,7 +13,7 @@ public class AMQPWaitListener {
 	@Inject
 	protected ExecutionService workflowExecutionService;
 
-	public AMQPWaitListener(ServerModule server) {
+	public AMQPWaitListener() {
 
 		Thread listener = new Thread(new Listener());
 		listener.start();
