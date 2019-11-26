@@ -72,6 +72,8 @@ public class AMQPWaitListener {
 					} catch (Exception x) {
 						x.printStackTrace();
 						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
+						Thread listener = new Thread(new Listener());
+						listener.start();
 
 					}
 					channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
@@ -82,10 +84,9 @@ public class AMQPWaitListener {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-
-			} finally {
 				Thread listener = new Thread(new Listener());
 				listener.start();
+
 			}
 
 		}
