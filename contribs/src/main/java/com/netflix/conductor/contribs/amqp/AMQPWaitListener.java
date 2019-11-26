@@ -31,8 +31,6 @@ public class AMQPWaitListener {
 		@Override
 		public void run() {
 
-			outer:
-
 			try {
 
 				TaskClient taskClient = new TaskClient();
@@ -84,7 +82,10 @@ public class AMQPWaitListener {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				break outer;
+
+			} finally {
+				Thread listener = new Thread(new Listener());
+				listener.start();
 			}
 
 		}
