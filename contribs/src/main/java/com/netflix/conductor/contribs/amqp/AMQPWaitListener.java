@@ -66,6 +66,7 @@ public class AMQPWaitListener {
 						}
 						Task task = taskClient.getPendingTaskForWorkflow(split[1], split[0]);
 						TaskResult taskResult = new TaskResult();
+						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
 						taskResult.setTaskId(task.getTaskId());
 						taskResult.setStatus(Status.COMPLETED);
 						taskResult.setWorkerId("AMQPLISTER");
