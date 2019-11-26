@@ -1,7 +1,7 @@
+
 package com.netflix.conductor.core.execution;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.name.Names;
 import com.netflix.conductor.service.AdminService;
 import com.netflix.conductor.service.AdminServiceImpl;
 import com.netflix.conductor.service.EventService;
@@ -28,8 +28,7 @@ public class WorkflowExecutorModule extends AbstractModule {
         bind(AdminService.class).to(AdminServiceImpl.class);
         bind(WorkflowService.class).to(WorkflowServiceImpl.class);
         bind(WorkflowBulkService.class).to(WorkflowBulkServiceImpl.class);
-        bind(TaskService.class).annotatedWith(Names.named("taskService")).to(TaskServiceImpl.class);
-        //expose(TaskService.class).annotatedWith(Names.named("taskService"));
+        bind(TaskService.class).to(TaskServiceImpl.class);
         bind(EventService.class).to(EventServiceImpl.class);
         bind(MetadataService.class).to(MetadataServiceImpl.class);
     }
