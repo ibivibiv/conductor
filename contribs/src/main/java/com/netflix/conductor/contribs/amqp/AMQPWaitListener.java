@@ -14,6 +14,7 @@ import com.netflix.conductor.common.metadata.tasks.TaskResult;
 import com.netflix.conductor.common.metadata.tasks.TaskResult.Status;
 import com.netflix.conductor.common.run.SearchResult;
 import com.netflix.conductor.common.run.TaskSummary;
+import com.netflix.conductor.common.run.Workflow;
 
 public class AMQPWaitListener {
 
@@ -55,14 +56,8 @@ public class AMQPWaitListener {
 						String[] split = message.split(",");
 						String workflowId = split[1];
 						String taskDefName = split[0];
-						String taskId = "";
-						SearchResult<TaskSummary> result = taskClient.search("");
-						List<TaskSummary> tasks = result.getResults();
-						for (TaskSummary t : tasks) {
-							taskId = t.getTaskId();
-							break;
-						}
-						Task task = taskClient.getPendingTaskForWorkflow(split[1], split[0]);
+						Workflow result = workflowClient.getWorkflow(workflowId, true);
+						Task task = result.getTaskByRefName(taskDefName);
 						TaskResult taskResult = new TaskResult();
 						taskResult.setWorkflowInstanceId(task.getWorkflowInstanceId());
 						taskResult.setTaskId(task.getTaskId());
