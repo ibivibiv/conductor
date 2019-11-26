@@ -1,7 +1,7 @@
 package com.netflix.conductor.contribs.amqp;
 
 import com.google.inject.Inject;
-import com.netflix.conductor.grpc.server.service.WorkflowServiceImpl;
+import com.netflix.conductor.service.WorkflowServiceImpl;
 import com.netflix.conductor.service.TaskServiceImpl;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
