@@ -1,10 +1,8 @@
 package com.netflix.conductor.contribs.amqp;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.netflix.conductor.core.execution.WorkflowExecutorModule;
-import com.netflix.conductor.service.TaskService;
-import com.netflix.conductor.service.TaskServiceImpl;
+import com.google.inject.Inject;
+import com.netflix.conductor.server.ServerModule;
+import com.netflix.conductor.service.ExecutionService;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -12,10 +10,11 @@ import com.rabbitmq.client.DeliverCallback;
 
 public class AMQPWaitListener {
 
-	public AMQPWaitListener() {
+	@Inject
+	protected ExecutionService workflowExecutionService;
 
-		//Injector injector = Guice.createInjector(new WorkflowExecutorModule());
-		//TaskService taskService = injector.getInstance(TaskServiceImpl.class);
+	public AMQPWaitListener(ServerModule server) {
+
 		Thread listener = new Thread(new Listener());
 		listener.start();
 
@@ -27,6 +26,8 @@ public class AMQPWaitListener {
 		public void run() {
 
 			try {
+
+				workflowExecutionService.getAllPollData();
 
 				ConnectionFactory factory = new ConnectionFactory();
 				factory.setHost("rabbitmq-headless");
@@ -50,6 +51,7 @@ public class AMQPWaitListener {
 			}
 
 		}
+
 	}
 
 }
