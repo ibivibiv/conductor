@@ -5,6 +5,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import com.netflix.conductor.client.http.TaskClient;
@@ -34,15 +36,15 @@ public class AMQPWaitListener {
 
 			try {
 
+				String rabbitUrl = new String(Files.readAllBytes(Paths.get("/url.config")));
+
 				TaskClient taskClient = new TaskClient();
 				WorkflowClient workflowClient = new WorkflowClient();
 				taskClient.setRootURI(URL);
 				workflowClient.setRootURI(URL);
 
 				ConnectionFactory factory = new ConnectionFactory();
-				factory.setHost("rabbitmq-headless");
-				factory.setUsername("conductor");
-				factory.setPassword("conductor");
+				factory.setUri(rabbitUrl.trim());
 				Connection connection = factory.newConnection();
 				Channel channel = connection.createChannel();
 
