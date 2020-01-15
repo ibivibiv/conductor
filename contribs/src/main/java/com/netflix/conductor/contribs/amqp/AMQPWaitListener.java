@@ -7,7 +7,9 @@ import com.rabbitmq.client.DeliverCallback;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.netflix.conductor.client.http.TaskClient;
 import com.netflix.conductor.client.http.WorkflowClient;
@@ -17,6 +19,8 @@ import com.netflix.conductor.common.metadata.tasks.TaskResult.Status;
 import com.netflix.conductor.common.run.SearchResult;
 import com.netflix.conductor.common.run.TaskSummary;
 import com.netflix.conductor.common.run.Workflow;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AMQPWaitListener {
 
@@ -36,7 +40,7 @@ public class AMQPWaitListener {
 
 			try {
 
-				String rabbitUrl = new String(Files.readAllBytes(Paths.get("/url.config")));
+				String url = new String(Files.readAllBytes(Paths.get("/url.config")));
 
 				TaskClient taskClient = new TaskClient();
 				WorkflowClient workflowClient = new WorkflowClient();
@@ -44,7 +48,7 @@ public class AMQPWaitListener {
 				workflowClient.setRootURI(URL);
 
 				ConnectionFactory factory = new ConnectionFactory();
-				factory.setUri(rabbitUrl.trim());
+				factory.setUri(url.trim());
 				Connection connection = factory.newConnection();
 				Channel channel = connection.createChannel();
 
@@ -55,9 +59,11 @@ public class AMQPWaitListener {
 					try {
 						String message = new String(delivery.getBody(), "UTF-8");
 						System.out.println(" [x] Received '" + message + "'");
-						String[] split = message.split(",");
-						String workflowId = split[1];
-						String taskDefName = split[0];
+						ObjectMapper mapper = new ObjectMapper();
+						Map<String, String> map = mapper.readValue(message.trim(), Map.class);
+						
+						String workflowId = map.get("workflowId");
+						String taskDefName = map.get("taskDefName");
 						Workflow result = workflowClient.getWorkflow(workflowId, true);
 						Task task = result.getTaskByRefName(taskDefName);
 						TaskResult taskResult = new TaskResult();
@@ -66,6 +72,9 @@ public class AMQPWaitListener {
 						taskResult.setStatus(Status.COMPLETED);
 						taskResult.setWorkerId("AMQPLISTER");
 						taskClient.updateTask(taskResult);
+						@SuppressWarnings("unchecked")
+					    Map<String, Object> targetMap = (Map<String, Object>) ((Object) map);
+						result.setInput(targetMap);
 					} catch (Exception x) {
 						x.printStackTrace();
 						channel.basicNack(delivery.getEnvelope().getDeliveryTag(), false, true);
