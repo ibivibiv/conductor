@@ -140,7 +140,7 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 			channel.queueDeclare(input.getQueue(), true, false, false, null);
 			
 			channel.basicPublish("", input.getQueue(), MessageProperties.PERSISTENT_TEXT_PLAIN,
-					input.getValue().getBytes("UTF-8"));
+					input.getValue().toString().getBytes());
 			task.setStatus(Task.Status.COMPLETED);
 			long timeTakenToCompleteTask = Instant.now().toEpochMilli() - taskStartMillis;
 			logger.info("Published message {}, Time taken {}", input, timeTakenToCompleteTask);
@@ -178,7 +178,7 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 
 		private String hosts;
 
-		private String value;
+		private Object value;
 
 		private Integer requestTimeoutMs;
 
@@ -204,11 +204,11 @@ public class AMQPPublishTask extends WorkflowSystemTask {
 			this.hosts = hosts;
 		}
 
-		public String getValue() {
+		public Object getValue() {
 			return value;
 		}
 
-		public void setValue(String value) {
+		public void setValue(Object value) {
 			this.value = value;
 		}
 
